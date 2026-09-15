@@ -1,0 +1,20 @@
+# Netlify 部署配置
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Vite 6 要求 Node 18+，固定为 LTS，避免 Netlify 默认版本变动导致构建失败
+  NODE_VERSION = "20"
+
+# 单页应用：所有路径回退到 index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# 注意：API Key 不写在本文件里（本文件会提交到仓库）。
+# 需在 Netlify 后台 Site configuration → Environment variables 添加：
+#   VITE_OPENWEATHER_API_KEY = <你的 Key>
+# 构建时由 Vite 注入到前端产物中。
