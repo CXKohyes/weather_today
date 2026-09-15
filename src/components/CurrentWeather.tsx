@@ -1,5 +1,6 @@
 import type { CurrentWeather as CurrentWeatherData } from '../types/weather';
 import type { AirQualityInfo } from '../utils/airQuality';
+import { WeatherIcon } from './WeatherIcon';
 
 interface CurrentWeatherProps {
   /** 当前天气数据 */
@@ -53,6 +54,11 @@ export function CurrentWeather({
         </button>
       </div>
       <p className="mt-2 text-lg text-white/85">{condition.description}</p>
+
+      {/* 大号天气图标：独立一行，填补描述与温度之间的留白 */}
+      <div className="mt-4 flex justify-center">
+        <WeatherIcon icon={condition.icon} alt={condition.description} size="xl" />
+      </div>
 
       {/* 大号温度与最高/最低温 */}
       <div className="flex flex-1 flex-col items-center justify-center py-8">

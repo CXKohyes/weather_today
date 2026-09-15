@@ -1,1 +1,134 @@
 @import "tailwindcss";
+
+/*
+ * 天气动画
+ * 强度克制含蓄：周期 0.9-90s，幅度小，作为氛围存在而不抢数据本身的注意力。
+ * Tailwind 4 的 @keyframes 必须嵌套在 @theme 内部才会被产出
+ * （参见内置主题 node_modules/tailwindcss/theme.css 中 spin/ping/pulse/bounce 的写法）。
+ * 同理，自定义动画一律自带 keyframes，不复用内置的 spin。
+ */
+@theme {
+  /* 云影横穿屏幕：60s / 90s 两档，形成视差 */
+  --animate-drift: drift 60s linear infinite;
+  --animate-drift-slow: drift 90s linear infinite;
+  /* 光晕呼吸 */
+  --animate-breathe: breathe 20s ease-in-out infinite;
+  /* 背景雨丝下落：位移量等于渐变图案的周期，保证循环无缝 */
+  --animate-fall: fall 0.6s linear infinite;
+  /* 背景雪花飘落 */
+  --animate-snowfall: snowfall 6s linear infinite;
+  /* 图标内元素轻微浮动 */
+  --animate-sway: sway 3s ease-in-out infinite;
+  /* 太阳光芒缓慢旋转 */
+  --animate-turn: turn 60s linear infinite;
+  /* 雷暴偶发闪光：大部分时间不可见 */
+  --animate-flash: flash 8s ease-in-out infinite;
+  /* 图标里的雨滴：小幅度下落并淡出 */
+  --animate-drip: drip 1.2s linear infinite;
+  /* 图标里的雪花：小幅度飘落并淡出 */
+  --animate-flake: flake 2.4s linear infinite;
+
+  @keyframes drift {
+    from {
+      transform: translateX(-40%);
+    }
+    to {
+      transform: translateX(140%);
+    }
+  }
+
+  @keyframes breathe {
+    0%,
+    100% {
+      opacity: 0.15;
+    }
+    50% {
+      opacity: 0.25;
+    }
+  }
+
+  @keyframes fall {
+    from {
+      transform: translateY(-60px);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes snowfall {
+    from {
+      transform: translate3d(0, -80px, 0);
+    }
+    to {
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes sway {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-1.5px);
+    }
+  }
+
+  @keyframes turn {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @keyframes flash {
+    0%,
+    88%,
+    100% {
+      opacity: 0;
+    }
+    90% {
+      opacity: 0.3;
+    }
+    92% {
+      opacity: 0.05;
+    }
+    94% {
+      opacity: 0.22;
+    }
+    96% {
+      opacity: 0;
+    }
+  }
+
+  @keyframes drip {
+    0% {
+      transform: translateY(-3px);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(5px);
+      opacity: 0;
+    }
+  }
+
+  @keyframes flake {
+    0% {
+      transform: translate(0, -3px);
+      opacity: 0;
+    }
+    30% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(2px, 5px);
+      opacity: 0;
+    }
+  }
+}

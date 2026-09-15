@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SearchBar } from './components/SearchBar';
 import { CurrentWeather } from './components/CurrentWeather';
+import { WeatherBackground } from './components/WeatherBackground';
 import { PrecipitationCard } from './components/PrecipitationCard';
 import { HourlyForecast } from './components/HourlyForecast';
 import { ForecastList } from './components/ForecastList';
@@ -87,8 +88,11 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#58a6e8]">
-      <div className="mx-auto w-full max-w-md px-4 pt-6 pb-8">
+    <div className="relative min-h-screen bg-[#58a6e8]">
+      {/* 氛围背景层：随当前天气变化，位于内容之下 */}
+      <WeatherBackground icon={current?.weather[0]?.icon} />
+
+      <div className="relative mx-auto w-full max-w-md px-4 pt-6 pb-8">
         {/* 顶部工具栏：搜索 + 定位 */}
         <div className="flex items-center gap-2">
           <SearchBar onSearch={searchByCity} disabled={loading} />
