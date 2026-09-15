@@ -6,6 +6,10 @@ interface CurrentWeatherProps {
   data: CurrentWeatherData;
   /** 展示用的城市名（本地化，中文优先） */
   name: string;
+  /** 今日最高温度（来自预报分组，当前天气接口的高低温不可靠） */
+  tempMax: number;
+  /** 今日最低温度（来自预报分组） */
+  tempMin: number;
   /** 该城市是否已收藏 */
   isFavorite: boolean;
   /** 点击星标收藏 / 取消收藏 */
@@ -21,6 +25,8 @@ interface CurrentWeatherProps {
 export function CurrentWeather({
   data,
   name,
+  tempMax,
+  tempMin,
   isFavorite,
   onToggleFavorite,
   airQuality = null,
@@ -55,7 +61,7 @@ export function CurrentWeather({
           <span className="align-super text-4xl font-light">°</span>
         </p>
         <p className="mt-8 text-white/85">
-          最高 {Math.round(data.main.temp_max)}° 最低 {Math.round(data.main.temp_min)}°
+          最高 {tempMax}° 最低 {tempMin}°
         </p>
       </div>
 

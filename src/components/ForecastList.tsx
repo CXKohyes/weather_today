@@ -29,7 +29,7 @@ export function ForecastList({ daily }: ForecastListProps) {
           return (
             <div key={day.date} className="flex items-center gap-3">
               <span className="w-10 shrink-0 text-sm text-white">
-                {index === 0 ? '明天' : formatWeekday(day.date)}
+                {index === 0 ? '今天' : index === 1 ? '明天' : formatWeekday(day.date)}
               </span>
               <WeatherIcon icon={day.icon} alt={day.description} size="xs" />
               {/* 温度区间条 */}

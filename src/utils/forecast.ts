@@ -5,11 +5,16 @@ const SECONDS_PER_DAY = 86400;
 
 /**
  * 把 5 天 / 3 小时间隔的预报数据按天汇总
- * 只取未来几天（不含今天），每天取最高/最低温度和正午附近的天气图标
+ * 每天取最高/最低温度和正午附近的天气图标
  * @param forecast 原始预报数据
  * @param days 需要的天数，默认 5
+ * @param includeToday 是否包含今天（今天只有当前时段之后的预报，最高/最低为当日剩余时段的值）
  */
-export function groupForecastByDay(forecast: Forecast, days = 5): DailyForecast[] {
+export function groupForecastByDay(
+  forecast: Forecast,
+  days = 5,
+  includeToday = false,
+): DailyForecast[] {
   const timezone = forecast.city.timezone;
   // 今天在“城市当地时区”的日期序号
   const todayIndex = Math.floor((Date.now() / 1000 + timezone) / SECONDS_PER_DAY);
@@ -28,8 +33,9 @@ export function groupForecastByDay(forecast: Forecast, days = 5): DailyForecast[
 
   const result: DailyForecast[] = [];
   for (const [dayIndex, items] of byDay) {
-    // 只取未来几天，跳过今天
-    if (dayIndex <= todayIndex) continue;
+    // 默认跳过今天；includeToday 时从今天开始取
+    if (dayIndex < todayIndex) continue;
+    if (!includeToday && dayIndex === todayIndex) continue;
     if (result.length >= days) break;
 
     let tempMin = Infinity;

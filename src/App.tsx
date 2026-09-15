@@ -67,8 +67,13 @@ function App() {
   // 是否处于“正在定位”阶段（定位中且还没有任何天气数据）
   const isLocating = geoStatus === 'locating' && !loading && !current;
 
-  // 预报数据按天汇总（未来 5 天，不含今天）
-  const daily = useMemo(() => (forecast ? groupForecastByDay(forecast, 5) : []), [forecast]);
+  // 预报数据按天汇总（今天 + 未来 4 天；今天为当日剩余时段的最高/最低）
+  const daily = useMemo(() => (forecast ? groupForecastByDay(forecast, 5, true) : []), [forecast]);
+
+  // 今日最高/最低：来自预报分组（当前天气接口的 temp_max/temp_min 往往等于当前温度，不可靠）
+  const today = daily[0];
+  const todayTempMax = today?.tempMax ?? Math.round(current?.main.temp_max ?? 0);
+  const todayTempMin = today?.tempMin ?? Math.round(current?.main.temp_min ?? 0);
 
   // 当前展示的城市名与收藏信息（中文名优先）
   const displayName = cityName ?? current?.name ?? '';
@@ -137,6 +142,8 @@ function App() {
                   <CurrentWeather
                     data={current}
                     name={displayName}
+                    tempMax={todayTempMax}
+                    tempMin={todayTempMin}
                     isFavorite={currentCity ? isFavorite(currentCity.id) : false}
                     onToggleFavorite={() => currentCity && toggleFavorite(currentCity)}
                     airQuality={airQuality}
