@@ -55,6 +55,7 @@ GET `https://api.openweathermap.org/data/2.5/air_pollution?lat={lat}&lon={lon}&a
 说明：
 - `units=metric` 使用摄氏度、米/秒
 - `lang=zh_cn` 只影响天气描述的中文化；城市名取 Geocoding 返回的 `local_names.zh`，无中文时回退为英文名
+- 免费地理编码不支持省级行政区（如「四川」会按拼音误匹配到甘肃的「司川」）：查询时先经过本地「省份 → 省会」映射表（`src/utils/provinceCapitals.ts`），再按省会查询天气；并从结果中挑选与查询词最匹配的一项
 - 5 天预报数据按天分组，取每天的最高/最低温度展示
 
 ## 错误处理

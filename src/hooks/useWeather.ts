@@ -8,6 +8,7 @@ import {
 } from '../services/weatherApi';
 import type { WeatherQuery } from '../services/weatherApi';
 import type { CurrentWeather, Forecast, GeocodingResult } from '../types/weather';
+import { resolveProvinceCapital } from '../utils/provinceCapitals';
 
 interface UseWeatherResult {
   /** 当前天气数据，尚未查询成功时为 null */
@@ -29,6 +30,25 @@ interface UseWeatherResult {
 /** 从 Geocoding 结果取中文城市名，没有中文时回退为英文名 */
 function pickLocalizedName(result: GeocodingResult): string {
   return result.local_names?.zh ?? result.name;
+}
+
+/** 从 Geocoding 结果中挑选与查询词最匹配的一项，避免误匹配（如「四川」→甘肃「司川」） */
+function pickPlace(places: GeocodingResult[], query: string): GeocodingResult {
+  const q = query.trim().toLowerCase();
+  // 1. 中文名完全匹配
+  let match = places.find((place) => place.local_names?.zh?.toLowerCase() === q);
+  if (match) return match;
+  // 2. 中文名以查询词开头（如「南京」→「南京市」）
+  match = places.find((place) => place.local_names?.zh?.toLowerCase().startsWith(q));
+  if (match) return match;
+  // 3. 英文名完全匹配
+  match = places.find((place) => place.name.toLowerCase() === q);
+  if (match) return match;
+  // 4. 英文名以查询词开头
+  match = places.find((place) => place.name.toLowerCase().startsWith(q));
+  if (match) return match;
+  // 5. 都不匹配时取第一个（接口已按相关度排序）
+  return places[0];
 }
 
 /**
@@ -87,11 +107,14 @@ export function useWeather(): UseWeatherResult {
   const searchByCity = useCallback(
     (city: string) =>
       run(async () => {
-        const places = await searchCity(city);
+        // 省级行政区：免费地理编码不支持，先映射到省会城市（如「四川」→「成都」）
+        const target = resolveProvinceCapital(city) ?? city;
+        const places = await searchCity(target);
         if (places.length === 0) {
           throw new WeatherApiError('未找到该城市，请检查城市名称');
         }
-        const place = places[0];
+        // 挑选与查询词最匹配的结果，避免拼音误匹配
+        const place = pickPlace(places, target);
         return {
           query: { lat: place.lat, lon: place.lon },
           name: pickLocalizedName(place),
