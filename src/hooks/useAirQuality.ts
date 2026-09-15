@@ -18,6 +18,10 @@ export function useAirQuality(lat?: number, lon?: number): AirQualityInfo | null
       return;
     }
 
+    // 坐标变化时先清空旧值：新城市的请求返回前，
+    // 不能继续把上一城市的空气质量挂在新城市名下
+    setInfo(null);
+
     let cancelled = false;
     getAirPollution(lat, lon)
       .then((data) => {
